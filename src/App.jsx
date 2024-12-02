@@ -7,10 +7,7 @@ const DISTANCE_THRESHOLD = 20; // Максимальное расстояние 
 
 const Map = () => {
 
-    // Сброс текущей последовательности
-    const handleResetSequence = () => {
-
-    };
+    const [stateSequence, setStateSequence] = useState("newLine");
 
     useEffect(() => {
         document.body.classList.add("no-scroll");
@@ -26,7 +23,10 @@ const Map = () => {
                     position: "relative",
                 }}
             >
-                <WarmConnection/>
+                <WarmConnection
+                    StateOfSequence={stateSequence}
+                    setStateOfSequence={setStateSequence}
+                />
             </div>
 
             {/* Панель управления */}
@@ -41,7 +41,7 @@ const Map = () => {
             >
                 <h3>Управление</h3>
                 <button
-                    onClick={handleResetSequence}
+                    onClick={() => setStateSequence("newLine")} // Исправлено
                     style={{
                         padding: "10px",
                         backgroundColor: "#00701a",
@@ -57,5 +57,4 @@ const Map = () => {
         </div>
     );
 };
-
 export default Map;

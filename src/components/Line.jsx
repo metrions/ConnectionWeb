@@ -1,7 +1,15 @@
-import React from 'react';
-
-const Line = (point1, point2) => {
-    return(
-        <></>
+const Line = ({ startX, startY, endX, endY, color, width, onClick }) => {
+    return (
+        <line
+            x1={startX}
+            y1={startY}
+            x2={endX}
+            y2={endY}
+            stroke={color}
+            strokeWidth={width}
+            onClick={onClick}
+        />
     );
-}
+};
+
+export default Line;

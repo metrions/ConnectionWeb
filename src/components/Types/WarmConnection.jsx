@@ -4,7 +4,9 @@ import Point from "../Point";
 const DISTANCE_THRESHOLD = 20;
 const LINE_CLICK_THRESHOLD = 2;
 
-const WarmConnection = () => {
+const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
+
+
     const [nodes, setNodes] = useState([]); // Точки
     const [lines, setLines] = useState([]); // Линии
     const [tempLine, setTempLine] = useState(null); // Временная линия
@@ -47,27 +49,19 @@ const WarmConnection = () => {
     };
 
     const handleMapClick = (event) => {
-        const svg = event.target.closest('svg');
-        const svgRect = svg.getBoundingClientRect();
-        const x = (event.clientX - svgRect.left - offset.x) / scale;
-        const y = (event.clientY - svgRect.top - offset.y) / scale;
 
-        if (event.target.tagName === "line") {
-            const clickedLineIndex = lines.findIndex((line) =>
-                isPointNearLine(x, y, line)
-            );
-            if (clickedLineIndex !== -1) {
-                const deletedLine = lines[clickedLineIndex];
-                setLines((prev) => prev.filter((_, index) => index !== clickedLineIndex));
+        const svg = event.currentTarget; // Текущее SVG
+        const point = svg.createSVGPoint(); // Создаём SVGPoint
+        point.x = event.clientX; // Устанавливаем координаты клика
+        point.y = event.clientY;
 
-                const nodesToDelete = [deletedLine.startX, deletedLine.endX];
-                setNodes((prev) => prev.filter((node) => {
-                    return !nodesToDelete.includes(node.id) || isNodeConnected(node.id);
-                }));
-            }
-            return;
-        }
+        // Преобразуем координаты с учётом viewBox
+        const transformedPoint = point.matrixTransform(svg.getScreenCTM().inverse());
 
+        const x = transformedPoint.x;
+        const y = transformedPoint.y;
+
+        // Логика добавления точек и линий
         if (nodes.length === 0) {
             const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
             setNodes((prev) => [...prev, newNode]);
@@ -78,30 +72,37 @@ const WarmConnection = () => {
         const nearestNode = findNearestNode(x, y);
         if (!tempLine) {
             if (nearestNode) {
-                setTempLine({ startX: x, startY: y });
-            } else {
-                const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
-                setNodes((prev) => [...prev, newNode]);
-                setTempLine({ startX: nearestNode.x, startY: nearestNode.y, endX: x, endY: y });
-            }
-        } else {
-            if (nearestNode) {
-                setLines((prev) => [
-                    ...prev,
-                    { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
-                ]);
                 setTempLine({ startX: nearestNode.x, startY: nearestNode.y });
             } else {
                 const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
                 setNodes((prev) => [...prev, newNode]);
-                setLines((prev) => [
-                    ...prev,
-                    { startX: tempLine.startX, startY: tempLine.startY, endX: x, endY: y },
-                ]);
                 setTempLine({ startX: x, startY: y });
+            }
+        } else {
+            if (nearestNode) {
+                if (StateOfSequence !== "newLine"){
+                    setLines((prev) => [
+                        ...prev,
+                        { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
+                    ]);
+                }
+                setStateOfSequence("draw");
+                setTempLine({startX: nearestNode.x, startY: nearestNode.y});
+            } else {
+                const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
+                setNodes((prev) => [...prev, newNode]);
+                if (StateOfSequence !== "newLine"){
+                    setLines((prev) => [
+                        ...prev,
+                        { startX: tempLine.startX, startY: tempLine.startY, endX: x, endY: y },
+                    ]);
+                }
+                setStateOfSequence("draw");
+                setTempLine({startX: x, startY: y});
             }
         }
     };
+
 
     const handleDragStart = (event) => {
         setIsDragging(true);
