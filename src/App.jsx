@@ -1,31 +1,61 @@
-import React from "react";
-import ReactFlow, { Background, Controls } from "react-flow-renderer";
+import React, {useEffect, useState} from "react";
+import Panel from "./components/Panel";
+import Point from "./components/Point";
+import WarmConnection from "./components/Types/WarmConnection";
 
-const initialElements = [
-  {
-    id: "1",
-    type: "input", // Входной узел
-    data: { label: "Перетащите элементы сюда" },
-    position: { x: 250, y: 0 },
-  },
-];
+const DISTANCE_THRESHOLD = 20; // Максимальное расстояние для соединения
 
-const App = () => {
-  return (
-      <div style={{ height: "100vh", width: "100vw", backgroundColor: "#222" }}>
-        <ReactFlow
-            elements={initialElements}
-            style={{ background: "#333", color: "#fff" }}
-            nodesDraggable
-            nodesConnectable
-        >
-          {/* Сетка */}
-          <Background variant="dots" gap={16} size={1} color="#555" />
-          {/* Управление */}
-          <Controls />
-        </ReactFlow>
-      </div>
-  );
+const Map = () => {
+
+    // Сброс текущей последовательности
+    const handleResetSequence = () => {
+
+    };
+
+    useEffect(() => {
+        document.body.classList.add("no-scroll");
+    }, []);
+
+    return (
+        <div style={{ display: "flex", height: "100vh" }}>
+            {/* Карта */}
+            <div
+                style={{
+                    width: "70%",
+                    backgroundColor: "#222",
+                    position: "relative",
+                }}
+            >
+                <WarmConnection/>
+            </div>
+
+            {/* Панель управления */}
+            <div
+                style={{
+                    width: "30%",
+                    backgroundColor: "#1a1a1a",
+                    color: "#fff",
+                    padding: "10px",
+                    overflowY: "auto",
+                }}
+            >
+                <h3>Управление</h3>
+                <button
+                    onClick={handleResetSequence}
+                    style={{
+                        padding: "10px",
+                        backgroundColor: "#00701a",
+                        color: "#fff",
+                        border: "none",
+                        cursor: "pointer",
+                        marginTop: "10px",
+                    }}
+                >
+                    Начать новую последовательность
+                </button>
+            </div>
+        </div>
+    );
 };
 
-export default App;
+export default Map;
