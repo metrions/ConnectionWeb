@@ -122,14 +122,29 @@ const WarmConnection = () => {
         }));
     };
 
+    const imgContainer = document.getElementById('map');
+
     const handleZoom = (event) => {
         const zoomFactor = 1.1;
-        if (event.deltaY < 0) {
-            setScale((prevScale) => Math.min(prevScale * zoomFactor, 5));
-        } else {
-            setScale((prevScale) => Math.max(prevScale / zoomFactor, 0.5));
-        }
+
+        setScale((prevScale) => {
+            const newScale = event.deltaY < 0
+                ? Math.min(prevScale * zoomFactor, 5)
+                : Math.max(prevScale / zoomFactor, 0.5);
+
+            if (imgContainer) {
+                const width = parseFloat(imgContainer.style.width || imgContainer.offsetWidth);
+                const height = parseFloat(imgContainer.style.height || imgContainer.offsetHeight);
+
+                imgContainer.style.width = `${width * (newScale / prevScale)}px`;
+                imgContainer.style.height = `${height * (newScale / prevScale)}px`;
+            }
+
+            return newScale;
+        });
     };
+
+
 
     return (
         <>
@@ -146,27 +161,22 @@ const WarmConnection = () => {
                     top: 0,
                     left: 0,
                     background: "#222",
-                    cursor: isDragging ? 'grabbing' : 'grab',
+                    cursor: isDragging ? "grabbing" : "grab",
                 }}
                 viewBox={`${-offset.x} ${-offset.y} ${window.innerWidth / scale} ${window.innerHeight / scale}`}
             >
                 {/* Картинка */}
                 <image
+                    id="map"
                     href="https://i.okcdn.ru/i?r=BDGmhjfL9BzD6NIU04xipmtvPuFCGBOTdULV9Cx23iVVxgXK-76PFfRhckg2L96zVvo"
-                    width="100%"
-                    height="100%"
                     x="0"
                     y="0"
-
+                    width={100 * scale + "%"}
+                    height={100 * scale +"%"}
                 />
                 {/* Точки */}
                 {nodes.map((node) => (
-                    <Point
-                        key={node.id}
-                        x={node.x}
-                        y={node.y}
-                        color={node.color}
-                    />
+                    <Point key={node.id} x={node.x} y={node.y} color={node.color}/>
                 ))}
                 {/* Линии */}
                 {lines.map((line, index) => (
@@ -181,6 +191,7 @@ const WarmConnection = () => {
                     />
                 ))}
             </svg>
+
         </>
     );
 };
