@@ -48,10 +48,21 @@ const Map = () => {
                         color: "#fff",
                         border: "none",
                         cursor: "pointer",
-                        marginTop: "10px",
                     }}
                 >
                     Начать новую последовательность
+                </button>
+                <button
+                    onClick={() => setStateSequence("delete")} // Исправлено
+                    style={{
+                        padding: "10px",
+                        backgroundColor: "#ea0808",
+                        color: "#ffffff",
+                        border: "none",
+                        cursor: "pointer",
+                    }}
+                >
+                    Удалить
                 </button>
 
             </div>

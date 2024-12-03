@@ -48,6 +48,65 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
         );
     };
 
+    const newPointAction = (x, y, nearestNode) => {
+        if (nearestNode){
+            setLines((prev) => [
+                ...prev,
+                { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
+            ]);
+        }
+        else{
+            setLines((prev) => [
+                ...prev,
+                { startX: tempLine.startX, startY: tempLine.startY, endX: x, endY: y },
+            ]);
+        }
+    }
+
+
+    const drawAction = (x, y) => {
+        // Логика добавления точек и линий
+        if (nodes.length === 0) {
+            const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
+            setNodes((prev) => [...prev, newNode]);
+            setStateOfSequence("draw");
+            setTempLine({ startX: x, startY: y });
+            return;
+        }
+
+        const nearestNode = findNearestNode(x, y);
+        if (!tempLine) {
+            if (nearestNode) {
+                setTempLine({ startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y });
+                setLines((prev) => [
+                    ...prev,
+                    { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
+                ]);
+            } else {
+                const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
+                setNodes((prev) => [...prev, newNode]);
+                setTempLine({ startX: tempLine.startX, startY: tempLine.startY, endX: x, endY: y });
+                setLines((prev) => [
+                    ...prev,
+                    { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
+                ]);
+            }
+        } else {
+            if (!nearestNode) {
+                const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
+                setNodes((prev) => [...prev, newNode]);
+                setTempLine({startX: x, startY: y});
+            }
+            else{
+                setTempLine({startX: x, startY: y});
+            }
+            if (StateOfSequence !== "newLine") {
+                newPointAction(x, y, nearestNode);
+            }
+            setStateOfSequence("draw");
+        }
+    }
+
     const handleMapClick = (event) => {
 
         const svg = event.currentTarget; // Текущее SVG
@@ -60,47 +119,17 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
 
         const x = transformedPoint.x;
         const y = transformedPoint.y;
-
-        // Логика добавления точек и линий
-        if (nodes.length === 0) {
-            const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
-            setNodes((prev) => [...prev, newNode]);
-            setTempLine({ startX: x, startY: y });
-            return;
+        switch (StateOfSequence){
+            case "draw":
+                drawAction(x, y);
+                break;
+            case "newLine":
+                drawAction(x, y);
+                break;
+            case "delete":
+                break;
         }
 
-        const nearestNode = findNearestNode(x, y);
-        if (!tempLine) {
-            if (nearestNode) {
-                setTempLine({ startX: nearestNode.x, startY: nearestNode.y });
-            } else {
-                const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
-                setNodes((prev) => [...prev, newNode]);
-                setTempLine({ startX: x, startY: y });
-            }
-        } else {
-            if (nearestNode) {
-                if (StateOfSequence !== "newLine"){
-                    setLines((prev) => [
-                        ...prev,
-                        { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
-                    ]);
-                }
-                setStateOfSequence("draw");
-                setTempLine({startX: nearestNode.x, startY: nearestNode.y});
-            } else {
-                const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
-                setNodes((prev) => [...prev, newNode]);
-                if (StateOfSequence !== "newLine"){
-                    setLines((prev) => [
-                        ...prev,
-                        { startX: tempLine.startX, startY: tempLine.startY, endX: x, endY: y },
-                    ]);
-                }
-                setStateOfSequence("draw");
-                setTempLine({startX: x, startY: y});
-            }
-        }
     };
 
 
@@ -145,7 +174,15 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
         });
     };
 
+    const [hoveredLine, setHoveredLine] = useState(null);
 
+    const handleLineMouseEnter = (index) => {
+        setHoveredLine(index); // Установить текущую линию как выделенную
+    };
+
+    const handleLineMouseLeave = () => {
+        setHoveredLine(null); // Сбросить выделение линии
+    };
 
     return (
         <>
@@ -187,8 +224,10 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
                         y1={line.startY}
                         x2={line.endX}
                         y2={line.endY}
-                        stroke="white"
-                        strokeWidth="2"
+                        stroke={hoveredLine === index ? "#13bfa6" : "white"} // Меняем цвет при наведении
+                        strokeWidth={hoveredLine === index ? "6" : "3"} // Меняем толщину при наведении
+                        onMouseEnter={() => handleLineMouseEnter(index)} // Обработчик наведения
+                        onMouseLeave={handleLineMouseLeave} // Обработчик ухода курсора
                     />
                 ))}
             </svg>
