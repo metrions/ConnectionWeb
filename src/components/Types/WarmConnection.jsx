@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Point from "../Point";
 
 const DISTANCE_THRESHOLD = 20;
@@ -14,6 +14,26 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
     const [offset, setOffset] = useState({ x: 0, y: 0 }); // Смещение
     const [isDragging, setIsDragging] = useState(false); // Флаг перетаскивания
 
+    const [hoveredLine, setHoveredLine] = useState(null);
+
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Delete" && hoveredLine !== null) {
+                setLines((prevLines) =>
+                    prevLines.filter((_, index) => index !== hoveredLine)
+                );
+                setHoveredLine(null); // Сброс выделения
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [hoveredLine]);
+
     const calculateDistance = (x1, y1, x2, y2) => {
         return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
     };
@@ -24,90 +44,70 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
 
         nodes.forEach((node) => {
             const distance = calculateDistance(x, y, node.x, node.y);
-            if (distance < minDistance) {
+            if (distance <= minDistance) {
                 nearestNode = node;
                 minDistance = distance;
             }
         });
 
-        return nearestNode;
+        return nearestNode; // Вернёт ближайшую точку или null, если ничего не найдено
     };
 
-    const isPointNearLine = (px, py, line) => {
-        const { startX, startY, endX, endY } = line;
-        const lineLength = calculateDistance(startX, startY, endX, endY);
-        const distanceToLine =
-            Math.abs((endY - startY) * px - (endX - startX) * py + endX * startY - endY * startX) /
-            lineLength;
-        return distanceToLine < LINE_CLICK_THRESHOLD;
-    };
+    const addElement = (x, y) => {
 
-    const isNodeConnected = (nodeId) => {
-        return lines.some(
-            (line) => line.startX === nodeId || line.endX === nodeId
-        );
-    };
-
-    const newPointAction = (x, y, nearestNode) => {
-        if (nearestNode){
-            setLines((prev) => [
-                ...prev,
-                { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
-            ]);
-        }
-        else{
-            setLines((prev) => [
-                ...prev,
-                { startX: tempLine.startX, startY: tempLine.startY, endX: x, endY: y },
-            ]);
-        }
     }
 
-
     const drawAction = (x, y) => {
-        // Логика добавления точек и линий
-        if (nodes.length === 0) {
-            const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
-            setNodes((prev) => [...prev, newNode]);
-            setStateOfSequence("draw");
-            setTempLine({ startX: x, startY: y });
-            return;
-        }
-
         const nearestNode = findNearestNode(x, y);
+
         if (!tempLine) {
+            // Создание начальной точки и линии
             if (nearestNode) {
-                setTempLine({ startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y });
-                setLines((prev) => [
-                    ...prev,
-                    { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
-                ]);
+                setTempLine({ startX: nearestNode.x, startY: nearestNode.y });
             } else {
                 const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
                 setNodes((prev) => [...prev, newNode]);
-                setTempLine({ startX: tempLine.startX, startY: tempLine.startY, endX: x, endY: y });
+                setTempLine({ startX: x, startY: y });
+            }
+            return;
+        }
+
+        if (nearestNode) {
+            // Соединяем с ближайшей точкой
+            if (StateOfSequence !== "newLine"){
                 setLines((prev) => [
                     ...prev,
-                    { startX: tempLine.startX, startY: tempLine.startY, endX: nearestNode.x, endY: nearestNode.y },
+                    {
+                        startX: tempLine.startX,
+                        startY: tempLine.startY,
+                        endX: nearestNode.x,
+                        endY: nearestNode.y,
+                    },
                 ]);
             }
+            setTempLine({ startX: nearestNode.x, startY: nearestNode.y });
         } else {
-            if (!nearestNode) {
-                const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
-                setNodes((prev) => [...prev, newNode]);
-                setTempLine({startX: x, startY: y});
-            }
-            else{
-                setTempLine({startX: x, startY: y});
-            }
+            // Добавляем новую точку и линию
+            const newNode = { id: `${nodes.length + 1}`, x, y, color: "red" };
+            setNodes((prev) => [...prev, newNode]);
             if (StateOfSequence !== "newLine") {
-                newPointAction(x, y, nearestNode);
+                setLines((prev) => [
+                    ...prev,
+                    {startX: tempLine.startX, startY: tempLine.startY, endX: x, endY: y},
+                ]);
             }
-            setStateOfSequence("draw");
+            setTempLine({ startX: x, startY: y });
         }
-    }
+        setStateOfSequence("draw");
+    };
+
+    const [hasMoved, setHasMoved] = useState(false); // Флаг перемещения
 
     const handleMapClick = (event) => {
+        if (hasMoved) {
+            setHasMoved(false); // Сброс флага
+            return; // Прерываем выполнение, если мышь двигалась
+        }
 
         const svg = event.currentTarget; // Текущее SVG
         const point = svg.createSVGPoint(); // Создаём SVGPoint
@@ -116,29 +116,22 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
 
         // Преобразуем координаты с учётом viewBox
         const transformedPoint = point.matrixTransform(svg.getScreenCTM().inverse());
-
         const x = transformedPoint.x;
         const y = transformedPoint.y;
-        switch (StateOfSequence){
+
+        switch (StateOfSequence) {
             case "draw":
-                drawAction(x, y);
-                break;
             case "newLine":
                 drawAction(x, y);
                 break;
             case "delete":
                 break;
         }
-
     };
-
 
     const handleDragStart = (event) => {
         setIsDragging(true);
-    };
-
-    const handleDragEnd = (event) => {
-        setIsDragging(false);
+        setHasMoved(false); // Сбрасываем флаг перемещения
     };
 
     const handleDrag = (event) => {
@@ -146,11 +139,20 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
         const deltaX = event.movementX;
         const deltaY = event.movementY;
 
+        if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+            setHasMoved(true); // Устанавливаем флаг, если мышь перемещается
+        }
+
         setOffset((prevOffset) => ({
             x: prevOffset.x + deltaX,
             y: prevOffset.y + deltaY,
         }));
     };
+
+    const handleDragEnd = (event) => {
+        setIsDragging(false);
+    };
+
 
     const imgContainer = document.getElementById('map');
 
@@ -174,7 +176,6 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
         });
     };
 
-    const [hoveredLine, setHoveredLine] = useState(null);
 
     const handleLineMouseEnter = (index) => {
         setHoveredLine(index); // Установить текущую линию как выделенную
@@ -212,10 +213,10 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
                     width={100 * scale + "%"}
                     height={100 * scale +"%"}
                 />
-                {/* Точки */}
-                {nodes.map((node) => (
-                    <Point key={node.id} x={node.x} y={node.y} color={node.color}/>
-                ))}
+                {/*/!* Точки *!/*/}
+                {/*{nodes.map((node) => (*/}
+                {/*    <Point key={node.id} x={node.x} y={node.y} color={node.color}/>*/}
+                {/*))}*/}
                 {/* Линии */}
                 {lines.map((line, index) => (
                     <line
