@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from "react";
-import Panel from "./components/Panel";
-import Point from "./components/Point";
 import WarmConnection from "./components/Types/WarmConnection";
-import ConsumerSVG from './components/elements/consumer.svg';
+import Controller from "./components/Controller";
+import Map from "./components/Map";
 
-const DISTANCE_THRESHOLD = 20; // Максимальное расстояние для соединения
-
-const Map = () => {
-
+const App = () => {
+    const [scale, setScale] = useState(1); // Масштаб
     const [stateSequence, setStateSequence] = useState("newLine");
+    const [imageSrc, setImageSrc] = useState(null);
 
     useEffect(() => {
         document.body.classList.add("no-scroll");
@@ -24,42 +22,23 @@ const Map = () => {
                     position: "relative",
                 }}
             >
-                <WarmConnection
-                    StateOfSequence={stateSequence}
-                    setStateOfSequence={setStateSequence}
-                />
-            </div>
-
-            {/* Панель управления */}
-            <div
-                style={{
-                    width: "30%",
-                    backgroundColor: "#1a1a1a",
-                    color: "#fff",
-                    padding: "10px",
-                    overflowY: "auto",
-                }}
-            >
-                <h3>Управление</h3>
-                <button
-                    onClick={() => setStateSequence("newLine")} // Исправлено
-                    style={{
-                        padding: "10px",
-                        backgroundColor: "#00701a",
-                        color: "#fff",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                >
-                    Начать новую последовательность
-                </button>
-
-                <div>
-                    {/*<ConsumerSVG/>*/}
-                </div>
+                    <Map imageSrc = {imageSrc} scale={scale}>
+                        <WarmConnection
+                            imageSrc={imageSrc}
+                            scale={scale}
+                            setScale={setScale}
+                            StateOfSequence={stateSequence}
+                            setStateOfSequence={setStateSequence}
+                        />
+                    </Map>
 
             </div>
+
+            <Controller setStateSequence={setStateSequence} setImage={setImageSrc} />
+
+
+
         </div>
     );
 };
-export default Map;
+export default App;

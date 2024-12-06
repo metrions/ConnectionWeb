@@ -1,24 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import Point from "../Point";
-import {toPng} from "html-to-image";
 
 const DISTANCE_THRESHOLD = 20;
-const LINE_CLICK_THRESHOLD = 2;
 
-const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
+const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
 
 
     const [nodes, setNodes] = useState([]); // Точки
     const [lines, setLines] = useState([]); // Линии
     const [tempLine, setTempLine] = useState(null); // Временная линия
-    const [scale, setScale] = useState(1); // Масштаб
     const [offset, setOffset] = useState({ x: 0, y: 0 }); // Смещение
     const [isDragging, setIsDragging] = useState(false); // Флаг перетаскивания
 
     const [hoveredLine, setHoveredLine] = useState(null);
-    const [imageSrc, setImageSrc] = useState(
-        "https://i.okcdn.ru/i?r=BDGmhjfL9BzD6NIU04xipmtvPuFCGBOTdULV9Cx23iVVxgXK-76PFfRhckg2L96zVvo"
-    );
+
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -26,7 +20,7 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
                 setLines((prevLines) =>
                     prevLines.filter((_, index) => index !== hoveredLine)
                 );
-                setHoveredLine(null); // Сброс выделения
+                setHoveredLine(null);
                 setStateOfSequence("newLine");
             }
         };
@@ -36,7 +30,8 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [hoveredLine]);
+    }, [hoveredLine, setStateOfSequence]); // Добавили setStateOfSequence
+
 
     const calculateDistance = (x1, y1, x2, y2) => {
         return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
@@ -56,10 +51,6 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
 
         return nearestNode; // Вернёт ближайшую точку или null, если ничего не найдено
     };
-
-    const addElement = (x, y) => {
-
-    }
 
     const drawAction = (x, y) => {
         const nearestNode = findNearestNode(x, y);
@@ -130,6 +121,8 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
                 break;
             case "delete":
                 break;
+            default:
+                break;
         }
     };
 
@@ -189,56 +182,10 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
         setHoveredLine(null); // Сбросить выделение линии
     };
 
-    const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setImageSrc(e.target.result); // Устанавливаем новое изображение
-            };
-            reader.readAsDataURL(file);
-        }
-    };
 
-    const exportToPng = () => {
-        const svgElement = document.getElementById("svg-container");
-        if (!svgElement) {
-            alert("SVG элемент не найден!");
-            return;
-        }
-        toPng(svgElement)
-            .then((dataUrl) => {
-                const link = document.createElement("a");
-                link.download = "map.png";
-                link.href = dataUrl;
-                link.click();
-            })
-            .catch((err) => {
-                console.error("Ошибка при экспорте PNG:", err);
-            });
-    };
 
     return (
         <>
-            <div style={{position: "absolute", top: 10, left: 10, zIndex: 10}}>
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (event) => setImageSrc(event.target.result);
-                            reader.readAsDataURL(file);
-                        }
-                    }}
-                    style={{marginBottom: "10px"}}
-                />
-                {/* Кнопка экспорта */}
-                <button onClick={exportToPng} style={{marginLeft: "10px"}}>
-                    Экспорт в PNG
-                </button>
-            </div>
             <svg
                 id="svg-container"
                 onClick={handleMapClick}
