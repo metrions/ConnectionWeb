@@ -1,8 +1,9 @@
 import React from "react";
 import {toPng} from "html-to-image";
+import {ReactComponent as ConsumerSVG} from "./elements/consumer.svg";
+import {ReactComponent as ProducerSVG} from "./elements/producer.svg";
 
 const Controller = ({setStateSequence, setImage}) => {
-
     const exportToPng = () => {
         const svgElement = document.getElementById("svg-container");
         if (!svgElement) {
@@ -67,10 +68,19 @@ const Controller = ({setStateSequence, setImage}) => {
                 <button onClick={exportToPng} style={{marginLeft: "10px"}}>
                     Экспорт в PNG
                 </button>
+
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <ConsumerSVG style={{width: '20px', height: '20px', marginRight: '10px'}}/>
+                    <h4>Потребитель</h4>
+                </div>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <ProducerSVG style={{width: '20px', height: '20px', marginRight: '10px'}}/>
+                    <h4>Источник</h4>
+                </div>
+
             </div>
 
-            <div style={{position: "absolute", top: 10, left: 10, zIndex: 10}}>
-            </div>
+            <div style={{position: "absolute", top: 10, left: 10, zIndex: 10}}/>
         </>
     );
 }
