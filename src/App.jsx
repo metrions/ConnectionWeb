@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import Panel from "./components/Panel";
 import Point from "./components/Point";
 import WarmConnection from "./components/Types/WarmConnection";
+import ConsumerSVG from './components/elements/consumer.svg';
 
 const DISTANCE_THRESHOLD = 20; // Максимальное расстояние для соединения
 
@@ -52,18 +53,10 @@ const Map = () => {
                 >
                     Начать новую последовательность
                 </button>
-                <button
-                    onClick={() => setStateSequence("delete")} // Исправлено
-                    style={{
-                        padding: "10px",
-                        backgroundColor: "#ea0808",
-                        color: "#ffffff",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                >
-                    Удалить
-                </button>
+
+                <div>
+                    {/*<ConsumerSVG/>*/}
+                </div>
 
             </div>
         </div>

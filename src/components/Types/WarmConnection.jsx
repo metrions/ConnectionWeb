@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Point from "../Point";
+import {toPng} from "html-to-image";
 
 const DISTANCE_THRESHOLD = 20;
 const LINE_CLICK_THRESHOLD = 2;
@@ -15,7 +16,9 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
     const [isDragging, setIsDragging] = useState(false); // Флаг перетаскивания
 
     const [hoveredLine, setHoveredLine] = useState(null);
-
+    const [imageSrc, setImageSrc] = useState(
+        "https://i.okcdn.ru/i?r=BDGmhjfL9BzD6NIU04xipmtvPuFCGBOTdULV9Cx23iVVxgXK-76PFfRhckg2L96zVvo"
+    );
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -24,6 +27,7 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
                     prevLines.filter((_, index) => index !== hoveredLine)
                 );
                 setHoveredLine(null); // Сброс выделения
+                setStateOfSequence("newLine");
             }
         };
 
@@ -185,9 +189,58 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
         setHoveredLine(null); // Сбросить выделение линии
     };
 
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImageSrc(e.target.result); // Устанавливаем новое изображение
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const exportToPng = () => {
+        const svgElement = document.getElementById("svg-container");
+        if (!svgElement) {
+            alert("SVG элемент не найден!");
+            return;
+        }
+        toPng(svgElement)
+            .then((dataUrl) => {
+                const link = document.createElement("a");
+                link.download = "map.png";
+                link.href = dataUrl;
+                link.click();
+            })
+            .catch((err) => {
+                console.error("Ошибка при экспорте PNG:", err);
+            });
+    };
+
     return (
         <>
+            <div style={{position: "absolute", top: 10, left: 10, zIndex: 10}}>
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => setImageSrc(event.target.result);
+                            reader.readAsDataURL(file);
+                        }
+                    }}
+                    style={{marginBottom: "10px"}}
+                />
+                {/* Кнопка экспорта */}
+                <button onClick={exportToPng} style={{marginLeft: "10px"}}>
+                    Экспорт в PNG
+                </button>
+            </div>
             <svg
+                id="svg-container"
                 onClick={handleMapClick}
                 onMouseDown={handleDragStart}
                 onMouseMove={handleDrag}
@@ -207,11 +260,11 @@ const WarmConnection = ({ StateOfSequence, setStateOfSequence }) => {
                 {/* Картинка */}
                 <image
                     id="map"
-                    href="https://i.okcdn.ru/i?r=BDGmhjfL9BzD6NIU04xipmtvPuFCGBOTdULV9Cx23iVVxgXK-76PFfRhckg2L96zVvo"
+                    href={imageSrc}
                     x="0"
                     y="0"
                     width={100 * scale + "%"}
-                    height={100 * scale +"%"}
+                    height={100 * scale + "%"}
                 />
                 {/*/!* Точки *!/*/}
                 {/*{nodes.map((node) => (*/}
