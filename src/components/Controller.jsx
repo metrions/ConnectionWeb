@@ -50,9 +50,7 @@ const Controller = ({setStateSequence, setImage}) => {
                 <div>
                     {/*<ConsumerSVG/>*/}
                 </div>
-
-            </div>
-            <input
+                <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
@@ -65,10 +63,11 @@ const Controller = ({setStateSequence, setImage}) => {
                     }}
                     style={{marginBottom: "10px"}}
                 />
-            {/* Кнопка экспорта */}
-            <button onClick={exportToPng} style={{marginLeft: "10px"}}>
-                Экспорт в PNG
-            </button>
+                {/* Кнопка экспорта */}
+                <button onClick={exportToPng} style={{marginLeft: "10px"}}>
+                    Экспорт в PNG
+                </button>
+            </div>
 
             <div style={{position: "absolute", top: 10, left: 10, zIndex: 10}}>
             </div>
