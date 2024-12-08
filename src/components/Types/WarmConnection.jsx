@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from 'react';
+import {ReactComponent as ProducerSVG} from "../elements/producer.svg";
+import ConsumerSVG from "../elements/ConsumerSVG";
 
 const DISTANCE_THRESHOLD = 20;
 
@@ -12,7 +14,8 @@ const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOf
     const [isDragging, setIsDragging] = useState(false); // Флаг перетаскивания
 
     const [hoveredLine, setHoveredLine] = useState(null);
-
+    const [components, setComponents] = useState([]);
+    const [hoveredComponent, setHoveredComponent] = useState(null);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -121,10 +124,31 @@ const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOf
                 break;
             case "delete":
                 break;
+            case "consumer":
+                consumerClick(x, y);
+                break;
+            case "producer":
+                break;
             default:
                 break;
         }
     };
+
+    const consumerClick = (x, y) => {
+        const nearestNode = findNearestNode(x, y);
+        if (nearestNode != null){
+            setComponents((prev) => [
+                ...prev,
+                {startX: nearestNode.x, startY: nearestNode.y, component: <ConsumerSVG x={nearestNode.x} y={nearestNode.y} size={10}/>},
+            ]);
+        }
+        else {
+            setComponents((prev) => [
+                ...prev,
+                {startX: x, startY: y, component: <ConsumerSVG x={x} y={y} size={10}/>},
+            ]);
+        }
+    }
 
     const handleDragStart = (event) => {
         setIsDragging(true);
@@ -175,7 +199,12 @@ const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOf
 
 
     const handleLineMouseEnter = (index) => {
-        setHoveredLine(index); // Установить текущую линию как выделенную
+        if (StateOfSequence === "draw"){
+            setHoveredLine(index); // Установить текущую линию как выделенную
+        }
+        if (StateOfSequence === "consumer"){
+            setHoveredComponent()
+        }
     };
 
     const handleLineMouseLeave = () => {
@@ -213,11 +242,7 @@ const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOf
                     width={100 * scale + "%"}
                     height={100 * scale + "%"}
                 />
-                {/*/!* Точки *!/*/}
-                {/*{nodes.map((node) => (*/}
-                {/*    <Point key={node.id} x={node.x} y={node.y} color={node.color}/>*/}
-                {/*))}*/}
-                {/* Линии */}
+
                 {lines.map((line, index) => (
                     <line
                         key={index}
@@ -231,6 +256,12 @@ const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOf
                         onMouseLeave={handleLineMouseLeave} // Обработчик ухода курсора
                     />
                 ))}
+                {components.map((comp, index) => (
+                    <g key={index}  transform={`translate(${comp.startX-5}, ${comp.startY-5})`}>
+                        {comp.component}
+                    </g>
+                ))}
+
             </svg>
 
         </>

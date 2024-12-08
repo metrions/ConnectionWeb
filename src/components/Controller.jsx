@@ -22,6 +22,14 @@ const Controller = ({setStateSequence, setImage}) => {
             });
     };
 
+    const handleClickConsumer = () => {
+        setStateSequence("consumer");
+    }
+
+    const handleClickProducer= () => {
+        setStateSequence("producer");
+    }
+
     return (
         <>
             {/* Панель управления */}
@@ -70,11 +78,11 @@ const Controller = ({setStateSequence, setImage}) => {
                 </button>
 
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <ConsumerSVG style={{width: '20px', height: '20px', marginRight: '10px'}}/>
+                    <ConsumerSVG onClick={handleClickConsumer} style={{width: '20px', height: '20px', marginRight: '10px'}}/>
                     <h4>Потребитель</h4>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <ProducerSVG style={{width: '20px', height: '20px', marginRight: '10px'}}/>
+                    <ProducerSVG onClick={handleClickProducer} style={{width: '20px', height: '20px', marginRight: '10px'}}/>
                     <h4>Источник</h4>
                 </div>
 
