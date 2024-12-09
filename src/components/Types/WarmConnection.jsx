@@ -1,12 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {ReactComponent as ProducerSVG} from "../elements/producer.svg";
 import ConsumerSVG from "../elements/ConsumerSVG";
 
 const DISTANCE_THRESHOLD = 20;
 
 const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
-
-
     const [nodes, setNodes] = useState([]); // Точки
     const [lines, setLines] = useState([]); // Линии
     const [tempLine, setTempLine] = useState(null); // Временная линия
@@ -250,7 +247,7 @@ const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOf
                         y1={line.startY}
                         x2={line.endX}
                         y2={line.endY}
-                        stroke={hoveredLine === index ? "#13bfa6" : "white"} // Меняем цвет при наведении
+                        stroke={hoveredLine === index ? "#13bfa6" : "#1e05bd"} // Меняем цвет при наведении
                         strokeWidth={hoveredLine === index ? "6" : "3"} // Меняем толщину при наведении
                         onMouseEnter={() => handleLineMouseEnter(index)} // Обработчик наведения
                         onMouseLeave={handleLineMouseLeave} // Обработчик ухода курсора
