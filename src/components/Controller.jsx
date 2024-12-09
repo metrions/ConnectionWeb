@@ -2,6 +2,7 @@ import React from "react";
 import {toPng} from "html-to-image";
 import {ReactComponent as ConsumerSVG} from "./elements/consumer.svg";
 import {ReactComponent as ProducerSVG} from "./elements/producer.svg";
+import "../App.css";
 
 const Controller = ({setStateSequence, setImage}) => {
     const exportToPng = () => {
@@ -43,23 +44,12 @@ const Controller = ({setStateSequence, setImage}) => {
                 }}
             >
                 <h3>Управление</h3>
-                <button
-                    onClick={() => setStateSequence("newLine")} // Исправлено
-                    style={{
-                        padding: "10px",
-                        backgroundColor: "#00701a",
-                        color: "#fff",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                >
-                    Начать новую последовательность
-                </button>
 
                 <div>
                     {/*<ConsumerSVG/>*/}
                 </div>
                 <input
+                    className="input-file-btn"
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
@@ -73,10 +63,9 @@ const Controller = ({setStateSequence, setImage}) => {
                     style={{marginBottom: "10px"}}
                 />
                 {/* Кнопка экспорта */}
-                <button onClick={exportToPng} style={{marginLeft: "10px"}}>
+                <button className="input-file-btn" onClick={exportToPng}>
                     Экспорт в PNG
                 </button>
-
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <ConsumerSVG onClick={handleClickConsumer} style={{width: '20px', height: '20px', marginRight: '10px'}}/>
                     <h4>Потребитель</h4>

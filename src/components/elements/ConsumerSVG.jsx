@@ -1,5 +1,5 @@
-const ConsumerSVG = ({index, x, y, size, color="#004D00" }) => {
-    const radius = size / 2; // Радиус круга
+const ConsumerSVG = ({ x, y, size = 30, color = "#004D00" }) => {
+    const radius = size / 2; // Радиус круга, чтобы сделать его круглым и центрированным
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -8,8 +8,8 @@ const ConsumerSVG = ({index, x, y, size, color="#004D00" }) => {
             viewBox={`0 0 ${size} ${size}`}
             style={{
                 position: "absolute",
-                left: x - radius, // Учитываем смещение по оси X
-                top: y - radius, // Учитываем смещение по оси Y
+                left: x - radius, // Смещаем по оси X, чтобы центрировать
+                top: y - radius, // Смещаем по оси Y, чтобы центрировать
                 pointerEvents: "none", // Не блокируем клики
             }}
         >
