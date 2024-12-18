@@ -7,7 +7,7 @@ import {ReactComponent as LineSVG} from "./elements/line.svg";
 import {ReactComponent as LineTwo} from "./elements/linesTwo.svg";
 import ConsumerSVG from "./elements/ConsumerSVG";
 
-const Controller = ({setStateSequence, setImage, type, setType}) => {
+const Controller = ({setComponent, setStateSequence, setImage, type, setType}) => {
     const exportToPng = () => {
         const svgElement = document.getElementById("svg-container");
         if (!svgElement) {
@@ -26,9 +26,10 @@ const Controller = ({setStateSequence, setImage, type, setType}) => {
             });
     };
 
-    const handleClickConsumer = () => {
-        console.log("AA");
+    const handleClickConsumer = (comp) => {
         setStateSequence("consumer");
+        console.log(comp);
+        setComponent(comp);
     }
 
     const handleClickProducer= () => {
@@ -69,8 +70,16 @@ const Controller = ({setStateSequence, setImage, type, setType}) => {
             <>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <ConsumerSVG
+                        onClick={() => handleClickConsumer(<ConsumerSVG style={{width: '50px', height: '50px'}} />)}
+                        style={{width: '50px', height: '50px'}}
+                    />
+                    <h4 style={{marginLeft: "40px"}}>Существующие ПС 220кВ</h4>
+                </div>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <ConsumerSVG
                         onClick={handleClickConsumer}
                         style={{width: '50px', height: '50px'}}
+                        color="red"
                     />
                     <h4 style={{marginLeft: "40px"}}>Существующие ПС 220кВ</h4>
                 </div>

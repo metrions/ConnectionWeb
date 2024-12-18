@@ -4,7 +4,7 @@ import ProducerSVG from "../elements/ProducerSVG";
 
 const DISTANCE_THRESHOLD = 20;
 
-const ElectroConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
+const ElectroConnection = ({component, StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
     const [nodes, setNodes] = useState([]); // Точки
     const [lines, setLines] = useState([]); // Линии
     const [tempLine, setTempLine] = useState(null); // Временная линия
@@ -136,31 +136,30 @@ const ElectroConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStat
             case "delete":
                 break;
             case "consumer":
-                consumerClick(x, y);
+                addComponent(x, y, component);
                 break;
             case "producer":
-                producerClick(x, y);
+                addComponent(x, y, component);
                 break;
             default:
                 break;
         }
     };
 
-    const consumerClick = (x, y) => {
+    const addComponent = (x, y, Component) => {
         const nearestNode = findNearestNode(x, y);
-        if (nearestNode != null){
-            setComponents((prev) => [
-                ...prev,
-                {startX: nearestNode.x, startY: nearestNode.y, component: <ConsumerSVG x={nearestNode.x} y={nearestNode.y} size={10}/>},
-            ]);
-        }
-        else {
-            setComponents((prev) => [
-                ...prev,
-                {startX: x, startY: y, component: <ConsumerSVG x={x} y={y} size={10}/>},
-            ]);
-        }
-    }
+        setComponents((prev) => [
+            ...prev,
+            {
+                startX: nearestNode?.x || x,
+                startY: nearestNode?.y || y,
+                component: (
+                    Component
+                ),
+            },
+        ]);
+    };
+
 
 
 

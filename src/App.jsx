@@ -9,6 +9,7 @@ const App = () => {
     const [stateSequence, setStateSequence] = useState("newLine");
     const [imageSrc, setImageSrc] = useState(null);
     const [type, setType] = useState("water");
+    const [component, setComponent] = useState(null);
 
     useEffect(() => {
         document.body.classList.add("no-scroll");
@@ -37,6 +38,7 @@ const App = () => {
                         }
                         {type === "electro" && (
                             <ElectroConnection
+                                component={component}
                                 imageSrc={imageSrc}
                                 scale={scale}
                                 setScale={setScale}
@@ -49,7 +51,13 @@ const App = () => {
 
             </div>
 
-            <Controller setType={setType} type={type} setStateSequence={setStateSequence} setImage={setImageSrc} />
+            <Controller
+                setComponent={setComponent}
+                setType={setType}
+                type={type}
+                setStateSequence={setStateSequence}
+                setImage={setImageSrc}
+            />
 
 
 
