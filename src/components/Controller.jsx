@@ -6,14 +6,35 @@ import "./controllerStyles.css"
 import {ReactComponent as LineSVG} from "./elements/line.svg";
 import {ReactComponent as LineTwo} from "./elements/linesTwo.svg";
 import ConsumerSVG from "./elements/ConsumerSVG";
+import ReactDOMServer from 'react-dom/server';
+import domtoimage from 'dom-to-image';
+import ReactDOM from "react-dom/client";
 
 const Controller = ({setComponent, setStateSequence, setImage, type, setType}) => {
-    const exportToPng = () => {
+    const exportToJpg = () => {
         const svgElement = document.getElementById("svg-container");
-        if (!svgElement) {
-            alert("SVG элемент не найден!");
-            return;
-        }
+
+        // Создаем элемент foreignObject для вставки legend
+        const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+        foreignObject.setAttribute("x", "10");
+        foreignObject.setAttribute("y", "calc(100% - 100px)"); // Позиция снизу
+        foreignObject.setAttribute("width", "100%");
+        foreignObject.setAttribute("height", "100px");
+
+        // Создаем контейнер для компонента React
+        const legendContainer = document.createElement("div");
+
+        // Используем createRoot для рендеринга компонента в DOM
+        const root = ReactDOM.createRoot(legendContainer);
+        root.render(<ElectroConnectionComponents />);
+
+        // Добавляем контейнер с компонентом в foreignObject
+        foreignObject.appendChild(legendContainer);
+
+        // Вставляем foreignObject в SVG
+        svgElement.appendChild(foreignObject);
+
+        // Теперь экспортируем SVG в изображение
         toPng(svgElement)
             .then((dataUrl) => {
                 const link = document.createElement("a");
@@ -22,9 +43,12 @@ const Controller = ({setComponent, setStateSequence, setImage, type, setType}) =
                 link.click();
             })
             .catch((err) => {
-                console.error("Ошибка при экспорте PNG:", err);
+                console.error("Ошибка toPng:", err);
             });
     };
+
+
+
 
     const handleClickConsumer = (comp) => {
         setStateSequence("consumer");
@@ -77,7 +101,7 @@ const Controller = ({setComponent, setStateSequence, setImage, type, setType}) =
                 </div>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <ConsumerSVG
-                        onClick={handleClickConsumer}
+                        onClick={() => handleClickConsumer(<ConsumerSVG color="red" style={{width: '50px', height: '50px'}}/>)}
                         style={{width: '50px', height: '50px'}}
                         color="red"
                     />
@@ -136,7 +160,7 @@ const Controller = ({setComponent, setStateSequence, setImage, type, setType}) =
                     }}
                 />
                 {/* Кнопка экспорта */}
-                <button className="input-file-btn" onClick={exportToPng}>
+                <button className="input-file-btn" onClick={exportToJpg}>
                     Экспорт в PNG
                 </button>
 
@@ -157,7 +181,6 @@ const Controller = ({setComponent, setStateSequence, setImage, type, setType}) =
                 {type === "electro" && ElectroConnectionComponents()}
             </div>
 
-            <div style={{position: "absolute", top: 10, left: 10, zIndex: 10}}/>
         </>
     );
 }
