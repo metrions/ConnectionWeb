@@ -4,7 +4,7 @@ import ProducerSVG from "../elements/ProducerSVG";
 
 const DISTANCE_THRESHOLD = 20;
 
-const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
+const WaterConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
     const [nodes, setNodes] = useState([]); // Точки
     const [lines, setLines] = useState([]); // Линии
     const [tempLine, setTempLine] = useState(null); // Временная линия
@@ -325,4 +325,4 @@ const WarmConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOf
     );
 };
 
-export default WarmConnection;
+export default WaterConnection;

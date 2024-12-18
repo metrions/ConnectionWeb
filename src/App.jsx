@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from "react";
-import WarmConnection from "./components/Types/WarmConnection";
+import WaterConnection from "./components/Types/WaterConnection";
 import Controller from "./components/Controller";
 import Map from "./components/Map";
+import ElectroConnection from "./components/Types/ElectroConnection";
 
 const App = () => {
     const [scale, setScale] = useState(1); // Масштаб
     const [stateSequence, setStateSequence] = useState("newLine");
     const [imageSrc, setImageSrc] = useState(null);
+    const [type, setType] = useState("water");
 
     useEffect(() => {
         document.body.classList.add("no-scroll");
@@ -23,18 +25,31 @@ const App = () => {
                 }}
             >
                     <Map imageSrc = {imageSrc} scale={scale}>
-                        <WarmConnection
-                            imageSrc={imageSrc}
-                            scale={scale}
-                            setScale={setScale}
-                            StateOfSequence={stateSequence}
-                            setStateOfSequence={setStateSequence}
-                        />
+                        {type === "water" && (
+                            <WaterConnection
+                                imageSrc={imageSrc}
+                                scale={scale}
+                                setScale={setScale}
+                                StateOfSequence={stateSequence}
+                                setStateOfSequence={setStateSequence}
+                            />
+                            )
+                        }
+                        {type === "electro" && (
+                            <ElectroConnection
+                                imageSrc={imageSrc}
+                                scale={scale}
+                                setScale={setScale}
+                                StateOfSequence={stateSequence}
+                                setStateOfSequence={setStateSequence}
+                            />
+                        )
+                        }
                     </Map>
 
             </div>
 
-            <Controller setStateSequence={setStateSequence} setImage={setImageSrc} />
+            <Controller setType={setType} type={type} setStateSequence={setStateSequence} setImage={setImageSrc} />
 
 
 

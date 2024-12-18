@@ -3,8 +3,11 @@ import {toPng} from "html-to-image";
 import {ReactComponent as ConsumerSVG} from "./elements/consumer.svg";
 import {ReactComponent as ProducerSVG} from "./elements/producer.svg";
 import "../App.css";
+import "./controllerStyles.css"
+import {ReactComponent as LineSVG} from "./elements/line.svg";
+import {ReactComponent as LineTwo} from "./elements/linesTwo.svg";
 
-const Controller = ({setStateSequence, setImage}) => {
+const Controller = ({setStateSequence, setImage, type, setType}) => {
     const exportToPng = () => {
         const svgElement = document.getElementById("svg-container");
         if (!svgElement) {
@@ -31,6 +34,52 @@ const Controller = ({setStateSequence, setImage}) => {
         setStateSequence("producer");
     }
 
+    const handleClickDraw = () => {
+        setStateSequence("draw");
+    }
+
+    const handleClickNewLine = () => {
+        setStateSequence("newLine");
+    }
+
+    const handleRadioChange = (event) => {
+        setType(event.target.value);
+    }
+
+    const WaterConnectionComponents = () => {
+        return (
+            <>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <ConsumerSVG onClick={handleClickConsumer}
+                                 style={{width: '40px', height: '25px', marginRight: '10px'}}/>
+                    <h4>Потребитель</h4>
+                </div>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                <ProducerSVG onClick={handleClickProducer}
+                             style={{width: '40px', height: '25px', marginRight: '10px'}}/>
+                <h4>Источник</h4>
+                </div>
+            </>
+            )
+    }
+
+    const ElectroConnectionComponents = () => {
+        return (
+            <>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <ConsumerSVG onClick={handleClickConsumer}
+                                 style={{width: '40px', height: '25px', marginRight: '10px'}}/>
+                    <h4>Потребитель</h4>
+                </div>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <ProducerSVG onClick={handleClickProducer}
+                                 style={{width: '40px', height: '25px', marginRight: '10px'}}/>
+                    <h4>Источник</h4>
+                </div>
+            </>
+        )
+    }
+
     return (
         <>
             {/* Панель управления */}
@@ -45,9 +94,22 @@ const Controller = ({setStateSequence, setImage}) => {
             >
                 <h3>Управление</h3>
 
+                <h4> Тип сети</h4>
                 <div>
-                    {/*<ConsumerSVG/>*/}
+                    <div className="form_radio_btn">
+                        <input checked={type === "water"} onChange={handleRadioChange} id="radio-1" type="radio" name="radio" value="water"/>
+                        <label htmlFor="radio-1">Вода</label>
+                    </div>
+                    <div className="form_radio_btn">
+                        <input checked={type === "electro"} onChange={handleRadioChange} id="radio-2" type="radio" name="radio" value="electro"/>
+                        <label htmlFor="radio-2">Электричество</label>
+                    </div>
+                    <div className="form_radio_btn">
+                        <input checked={type === "warm"} onChange={handleRadioChange} id="radio-3" type="radio" name="radio" value="warm"/>
+                        <label htmlFor="radio-3">Тепло</label>
+                    </div>
                 </div>
+                <h4>Импорт/Экспорт</h4>
                 <input
                     className="input-file-btn"
                     type="file"
@@ -60,21 +122,27 @@ const Controller = ({setStateSequence, setImage}) => {
                             reader.readAsDataURL(file);
                         }
                     }}
-                    style={{marginBottom: "10px"}}
                 />
                 {/* Кнопка экспорта */}
                 <button className="input-file-btn" onClick={exportToPng}>
                     Экспорт в PNG
                 </button>
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                    <ConsumerSVG onClick={handleClickConsumer} style={{width: '20px', height: '20px', marginRight: '10px'}}/>
-                    <h4>Потребитель</h4>
-                </div>
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                    <ProducerSVG onClick={handleClickProducer} style={{width: '20px', height: '20px', marginRight: '10px'}}/>
-                    <h4>Источник</h4>
-                </div>
 
+                <h4>Компоненты сети</h4>
+                <div style={{display: "flex"}}>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                        <LineSVG onClick={handleClickNewLine} style={{
+                            width: '40px', height: '25px', marginRight: '10px'
+                        }}/>
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                        <LineTwo onClick={handleClickDraw} style={{
+                            width: '40px', height: '25px', marginRight: '10px'
+                        }}/>
+                    </div>
+                </div>
+                {type === "water" && WaterConnectionComponents()}
+                {type === "electro" && ElectroConnectionComponents()}
             </div>
 
             <div style={{position: "absolute", top: 10, left: 10, zIndex: 10}}/>

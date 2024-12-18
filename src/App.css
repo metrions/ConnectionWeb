@@ -7,15 +7,15 @@ canvas {
   display: block;
 }
 
-label {
-  background-color: indigo;
-  color: white;
-  padding: 0.5rem;
-  font-family: sans-serif;
-  border-radius: 0.3rem;
-  cursor: pointer;
-  margin-top: 1rem;
-}
+/*label {*/
+/*  background-color: indigo;*/
+/*  color: white;*/
+/*  padding: 0.5rem;*/
+/*  font-family: sans-serif;*/
+/*  border-radius: 0.3rem;*/
+/*  cursor: pointer;*/
+/*  margin-top: 1rem;*/
+/*}*/
 
 #file-chosen{
   margin-left: 0.3rem;
@@ -28,7 +28,7 @@ label {
 }
 .input-file-btn {
   position: relative;
-  display: inline-block;
+  display: block;
   cursor: pointer;
   outline: none;
   text-decoration: none;
@@ -36,14 +36,14 @@ label {
   vertical-align: middle;
   color: rgb(255 255 255);
   text-align: center;
-  border-radius: 4px;
+  border-radius: 2px;
   background-color: #419152;
   line-height: 22px;
   height: 40px;
   padding: 10px 20px;
   box-sizing: border-box;
   border: none;
-  margin: 0;
+  margin-bottom: 10px;
   transition: background-color 0.2s;
 }
 .input-file-text {
