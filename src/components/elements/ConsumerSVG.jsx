@@ -1,4 +1,4 @@
-const ConsumerSVG = ({ x, y, size = 30, color = "#004D00" }) => {
+const ConsumerSVG = ({ x, y, size = 30, color = "#004D00", onClick }) => {
     const radius = size / 2; // Радиус круга, чтобы сделать его круглым и центрированным
     return (
         <svg
@@ -10,8 +10,8 @@ const ConsumerSVG = ({ x, y, size = 30, color = "#004D00" }) => {
                 position: "absolute",
                 left: x - radius, // Смещаем по оси X, чтобы центрировать
                 top: y - radius, // Смещаем по оси Y, чтобы центрировать
-                pointerEvents: "none", // Не блокируем клики
             }}
+            onClick={onClick}
         >
             <circle
                 cx={radius} // Центр круга

@@ -1,11 +1,11 @@
 import React from "react";
 import {toPng} from "html-to-image";
-import {ReactComponent as ConsumerSVG} from "./elements/consumer.svg";
 import {ReactComponent as ProducerSVG} from "./elements/producer.svg";
 import "../App.css";
 import "./controllerStyles.css"
 import {ReactComponent as LineSVG} from "./elements/line.svg";
 import {ReactComponent as LineTwo} from "./elements/linesTwo.svg";
+import ConsumerSVG from "./elements/ConsumerSVG";
 
 const Controller = ({setStateSequence, setImage, type, setType}) => {
     const exportToPng = () => {
@@ -27,6 +27,7 @@ const Controller = ({setStateSequence, setImage, type, setType}) => {
     };
 
     const handleClickConsumer = () => {
+        console.log("AA");
         setStateSequence("consumer");
     }
 
@@ -67,9 +68,11 @@ const Controller = ({setStateSequence, setImage, type, setType}) => {
         return (
             <>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <ConsumerSVG onClick={handleClickConsumer}
-                                 style={{width: '40px', height: '25px', marginRight: '10px'}}/>
-                    <h4>Потребитель</h4>
+                    <ConsumerSVG
+                        onClick={handleClickConsumer}
+                        style={{width: '50px', height: '50px'}}
+                    />
+                    <h4 style={{marginLeft: "40px"}}>Существующие ПС 220кВ</h4>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <ProducerSVG onClick={handleClickProducer}
