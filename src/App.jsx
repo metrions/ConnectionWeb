@@ -10,6 +10,7 @@ const App = () => {
     const [imageSrc, setImageSrc] = useState(null);
     const [type, setType] = useState("water");
     const [component, setComponent] = useState(null);
+    const [offset, setOffset] = useState({ x: 0, y: 0 }); // Смещение
 
     useEffect(() => {
         document.body.classList.add("no-scroll");
@@ -28,6 +29,8 @@ const App = () => {
                     <Map imageSrc = {imageSrc} scale={scale}>
                         {type === "water" && (
                             <WaterConnection
+                                offset={offset}
+                                setOffset={setOffset}
                                 imageSrc={imageSrc}
                                 scale={scale}
                                 setScale={setScale}
@@ -38,6 +41,8 @@ const App = () => {
                         }
                         {type === "electro" && (
                             <ElectroConnection
+                                offset={offset}
+                                setOffset={setOffset}
                                 component={component}
                                 imageSrc={imageSrc}
                                 scale={scale}
@@ -52,6 +57,7 @@ const App = () => {
             </div>
 
             <Controller
+                offset={offset}
                 setComponent={setComponent}
                 setType={setType}
                 type={type}

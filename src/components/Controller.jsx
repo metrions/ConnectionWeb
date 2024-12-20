@@ -10,8 +10,7 @@ import ReactDOMServer from 'react-dom/server';
 import domtoimage from 'dom-to-image';
 import ReactDOM from "react-dom/client";
 
-const Controller = ({setComponent, setStateSequence, setImage, type, setType, image}) => {
-    const [offset, setOffset] = useState({ x: 0, y: 0 }); // Смещение
+const Controller = ({offset, setComponent, setStateSequence, setImage, type, setType, image}) => {
 
 
     const exportToJpg = () => {
@@ -21,9 +20,10 @@ const Controller = ({setComponent, setStateSequence, setImage, type, setType, im
         const boundingBox = svgElement.getBoundingClientRect();
 
         // Вычисляем координаты центра
-        const x = map.x;
-        console.log(map);
-        const y = boundingBox.bottom;
+        console.log(offset);
+
+        const x = 0;
+        const y = "90vh";
 
         const width = map.right - map.left;
         const height = map.top - map.bottom;
@@ -34,16 +34,16 @@ const Controller = ({setComponent, setStateSequence, setImage, type, setType, im
         const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
         foreignObject.setAttribute("x", x);
         foreignObject.setAttribute("y", y); // Позиция снизу
-        foreignObject.setAttribute("width", width+map.left+200); // Ширина по всему SVG
-        foreignObject.setAttribute("height", "300px"); // Высота будет зависеть от содержимого
-
+        foreignObject.setAttribute("width", map.width); // Ширина по всему SVG
+        foreignObject.setAttribute("height", 300); // Высота будет зависеть от содержимого
+        console.log(foreignObject);
         // Создаем контейнер для компонента React
         const legendContainer = document.createElement("div");
 
         // Устанавливаем стиль для контейнера легенды
         legendContainer.style.backgroundColor = "white"; // Белый фон
-        legendContainer.style.width = map.width+map.left; // Чтобы контейнер занимал всю доступную ширину
-        legendContainer.style.height = "300px"; // Чтобы контейнер занимал всю доступную ширину
+        legendContainer.style.width = map.width; // Чтобы контейнер занимал всю доступную ширину
+        legendContainer.style.height = 300; // Чтобы контейнер занимал всю доступную ширину
         legendContainer.style.position = "relative"; // Фиксируем положение контейнера
 
         // Используем createRoot для рендеринга компонента в контейнере
@@ -68,11 +68,6 @@ const Controller = ({setComponent, setStateSequence, setImage, type, setType, im
                 console.error("Ошибка toPng:", err);
             });
     };
-
-
-
-
-
 
     const handleClickConsumer = (comp) => {
         setStateSequence("consumer");

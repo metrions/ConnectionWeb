@@ -4,11 +4,10 @@ import ProducerSVG from "../elements/ProducerSVG";
 
 const DISTANCE_THRESHOLD = 20;
 
-const WaterConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
+const WaterConnection = ({ offset, setOffset, StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
     const [nodes, setNodes] = useState([]); // Точки
     const [lines, setLines] = useState([]); // Линии
     const [tempLine, setTempLine] = useState(null); // Временная линия
-    const [offset, setOffset] = useState({ x: 0, y: 0 }); // Смещение
     const [isDragging, setIsDragging] = useState(false); // Флаг перетаскивания
 
     const [hoveredLine, setHoveredLine] = useState(null);
@@ -286,6 +285,8 @@ const WaterConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateO
                     id="map"
                     href={imageSrc}
                     x={`10vw`}
+                    width={"1920px"}
+                    height={"1080px"}
                     transform={`scale(${scale})`}
                 />
                 {lines.map((line, index) => (

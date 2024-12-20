@@ -4,16 +4,17 @@ import ProducerSVG from "../elements/ProducerSVG";
 
 const DISTANCE_THRESHOLD = 20;
 
-const ElectroConnection = ({component, StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
+const ElectroConnection = ({offset, setOffset, component, StateOfSequence, scale, setScale, imageSrc, setStateOfSequence }) => {
     const [nodes, setNodes] = useState([]); // Точки
     const [lines, setLines] = useState([]); // Линии
     const [tempLine, setTempLine] = useState(null); // Временная линия
-    const [offset, setOffset] = useState({ x: 0, y: 0 }); // Смещение
     const [isDragging, setIsDragging] = useState(false); // Флаг перетаскивания
 
     const [hoveredLine, setHoveredLine] = useState(null);
     const [components, setComponents] = useState([]);
     const [hoveredComponent, setHoveredComponent] = useState(null);
+    const [isCursorOverLegend, setIsCursorOverLegend] = useState(false);
+    const [imageSize, setImageSize] = useState({ width: 1920, height: 1080 }); // Размер изображения
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -118,6 +119,10 @@ const ElectroConnection = ({component, StateOfSequence, scale, setScale, imageSr
             return; // Прерываем выполнение, если мышь двигалась
         }
 
+        if (isCursorOverLegend) {
+            return;
+        }
+
         const svg = event.currentTarget; // Текущее SVG
         const point = svg.createSVGPoint(); // Создаём SVGPoint
         point.x = event.clientX; // Устанавливаем координаты клика
@@ -215,6 +220,13 @@ const ElectroConnection = ({component, StateOfSequence, scale, setScale, imageSr
         setIsDragging(false);
     };
 
+    const handleLegendMouseEnter = () => {
+        setIsCursorOverLegend(true);
+    };
+
+    const handleLegendMouseLeave = () => {
+        setIsCursorOverLegend(false);
+    };
 
     const imgContainer = document.getElementById('map');
 
@@ -257,7 +269,13 @@ const ElectroConnection = ({component, StateOfSequence, scale, setScale, imageSr
         setHoveredComponent(index);
     };
 
-
+    useEffect(() => {
+        const img = new Image();
+        img.src = imageSrc;
+        img.onload = () => {
+            setImageSize({ width: img.naturalWidth, height: img.naturalHeight });
+        };
+    }, [imageSrc]);
 
 
     return (
@@ -270,12 +288,12 @@ const ElectroConnection = ({component, StateOfSequence, scale, setScale, imageSr
                 onMouseUp={handleDragEnd}
                 onWheel={handleZoom}
                 style={{
-                    position: "absolute",
+                    position: "relative",
                     width: "100%",
                     height: "100%",
                     top: 0,
                     left: 0,
-                    background: "#222",
+                    background: "#f8f6f6",
                     cursor: isDragging ? "grabbing" : "grab",
                 }}
                 viewBox={`${-offset.x} ${-offset.y} ${window.innerWidth / scale} ${window.innerHeight / scale}`}
@@ -284,10 +302,10 @@ const ElectroConnection = ({component, StateOfSequence, scale, setScale, imageSr
                 <image
                     id="map"
                     href={imageSrc}
-                    x="0"
-                    y="0"
-                    width={100 * scale + "%"}
-                    height={100 * scale + "%"}
+                    x={0}
+                    y={0}
+                    width={`${imageSize.width}px`}
+                    height={`80%`}
                 />
                 {lines.map((line, index) => (
                     <line
@@ -308,14 +326,13 @@ const ElectroConnection = ({component, StateOfSequence, scale, setScale, imageSr
                         transform={`translate(${comp.startX - 5}, ${comp.startY - 5})`}
                         onMouseEnter={() => handleComponentMouseEnter(index)}
                         onMouseLeave={handleComponentLeave}
-                        style={{ pointerEvents: "all" }}
+                        style={{pointerEvents: "all"}}
                     >
-                        <circle cx={0} cy={0} r={10} fill="transparent" /> {/* Видимая область для наведения */}
+                        <circle cx={0} cy={0} r={10} fill="transparent"/>
+                        {/* Видимая область для наведения */}
                         {comp.component}
                     </g>
                 ))}
-
-
 
 
             </svg>
