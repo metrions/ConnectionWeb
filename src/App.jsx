@@ -57,6 +57,7 @@ const App = () => {
                 type={type}
                 setStateSequence={setStateSequence}
                 setImage={setImageSrc}
+                image={imageSrc}
             />
 
 

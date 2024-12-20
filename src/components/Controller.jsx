@@ -1,5 +1,5 @@
-import React from "react";
-import {toPng} from "html-to-image";
+import React, {useState} from "react";
+import {toJpeg, toPng} from "html-to-image";
 import {ReactComponent as ProducerSVG} from "./elements/producer.svg";
 import "../App.css";
 import "./controllerStyles.css"
@@ -10,31 +10,53 @@ import ReactDOMServer from 'react-dom/server';
 import domtoimage from 'dom-to-image';
 import ReactDOM from "react-dom/client";
 
-const Controller = ({setComponent, setStateSequence, setImage, type, setType}) => {
+const Controller = ({setComponent, setStateSequence, setImage, type, setType, image}) => {
+    const [offset, setOffset] = useState({ x: 0, y: 0 }); // Смещение
+
+
     const exportToJpg = () => {
         const svgElement = document.getElementById("svg-container");
+        const map = document.getElementById("map").getBoundingClientRect();
+        // Получаем размеры и положение SVG
+        const boundingBox = svgElement.getBoundingClientRect();
 
-        // Создаем элемент foreignObject для вставки legend
+        // Вычисляем координаты центра
+        const x = map.x;
+        console.log(map);
+        const y = boundingBox.bottom;
+
+        const width = map.right - map.left;
+        const height = map.top - map.bottom;
+        // Копируем SVG элемент
+        const svgClone = svgElement.cloneNode(true);
+
+        // Вычисления в JavaScript
         const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-        foreignObject.setAttribute("x", "10");
-        foreignObject.setAttribute("y", "calc(100% - 100px)"); // Позиция снизу
-        foreignObject.setAttribute("width", "100%");
-        foreignObject.setAttribute("height", "100px");
+        foreignObject.setAttribute("x", x);
+        foreignObject.setAttribute("y", y); // Позиция снизу
+        foreignObject.setAttribute("width", width+map.left+200); // Ширина по всему SVG
+        foreignObject.setAttribute("height", "300px"); // Высота будет зависеть от содержимого
 
         // Создаем контейнер для компонента React
         const legendContainer = document.createElement("div");
 
-        // Используем createRoot для рендеринга компонента в DOM
+        // Устанавливаем стиль для контейнера легенды
+        legendContainer.style.backgroundColor = "white"; // Белый фон
+        legendContainer.style.width = map.width+map.left; // Чтобы контейнер занимал всю доступную ширину
+        legendContainer.style.height = "300px"; // Чтобы контейнер занимал всю доступную ширину
+        legendContainer.style.position = "relative"; // Фиксируем положение контейнера
+
+        // Используем createRoot для рендеринга компонента в контейнере
         const root = ReactDOM.createRoot(legendContainer);
         root.render(<ElectroConnectionComponents />);
 
         // Добавляем контейнер с компонентом в foreignObject
         foreignObject.appendChild(legendContainer);
 
-        // Вставляем foreignObject в SVG
+        // Вставляем foreignObject в склонированный SVG
         svgElement.appendChild(foreignObject);
 
-        // Теперь экспортируем SVG в изображение
+        // Теперь экспортируем склонированный SVG в изображение
         toPng(svgElement)
             .then((dataUrl) => {
                 const link = document.createElement("a");
@@ -46,6 +68,8 @@ const Controller = ({setComponent, setStateSequence, setImage, type, setType}) =
                 console.error("Ошибка toPng:", err);
             });
     };
+
+
 
 
 

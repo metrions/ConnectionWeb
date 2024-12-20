@@ -285,10 +285,8 @@ const WaterConnection = ({ StateOfSequence, scale, setScale, imageSrc, setStateO
                 <image
                     id="map"
                     href={imageSrc}
-                    x="0"
-                    y="0"
-                    width={100 * scale + "%"}
-                    height={100 * scale + "%"}
+                    x={`10vw`}
+                    transform={`scale(${scale})`}
                 />
                 {lines.map((line, index) => (
                     <line

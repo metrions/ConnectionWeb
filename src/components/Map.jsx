@@ -7,7 +7,6 @@ const Map = ({ imageSrc, scale, children }) => {
     return (
         <>
             <image
-                id="map"
                 href={imageSrc}
                 x="0"
                 y="0"
